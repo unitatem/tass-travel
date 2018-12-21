@@ -1,0 +1,9 @@
+# Project
+resources
+
+# Python
+venv
+
+# PyCharm
+.idea
+
