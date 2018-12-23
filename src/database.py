@@ -37,7 +37,6 @@ class Database:
                                             password="tass",
                                             host="localhost",
                                             database="tass_db")
-        print("Done")
 
     def insert_city(self, name: str, population: int):
         self._check_cursor()
@@ -104,13 +103,44 @@ class Database:
         SELECT COUNT(*)
         FROM planet_osm_point
         WHERE amenity = 'cafe'
-          AND ST_DWITHIN(way,
-                         ST_TRANSFORM(ST_SETSRID(ST_MAKEPOINT({longitude}, {latitude}),
-                                                 4326),
-                                      3857),
-                         {radius})""".format(latitude=lat,
-                                             longitude=lng,
-                                             radius=radius)
-
+            AND ST_DWITHIN(way,
+                           ST_TRANSFORM(ST_SETSRID(ST_MAKEPOINT({longitude}, {latitude}),
+                                                   4326),
+                                        3857),
+                           {radius})
+        """.format(latitude=lat,
+                   longitude=lng,
+                   radius=radius)
         self._cursor.execute(sql)
         return self._safe_fetchone()
+
+    def get_all_cities(self):
+        self._check_cursor()
+
+        sql = """
+        SELECT * FROM city
+        """
+        self._cursor.execute(sql)
+        rows = self._cursor.fetchall()
+        rows = [{'id': r[0], 'name': r[1], 'population': r[2]} for r in rows]
+        return rows
+
+    def get_flights(self, begin_date: str, end_end: str):
+        """
+        Please provide date in format YYYY-MM-DD
+        """
+        self._check_cursor()
+
+        sql = """
+        SELECT org_city, dst_city, SUM(passengers)
+        FROM flight
+        WHERE fly_date >= '{begin}'
+            AND fly_date < '{end}'
+            AND passengers > 0
+        GROUP BY org_city, dst_city
+        """.format(begin=begin_date,
+                   end=end_end)
+        self._cursor.execute(sql)
+        rows = self._cursor.fetchall()
+        rows = [{'from': r[0], 'to': r[1], 'passengers': r[2]} for r in rows]
+        return rows

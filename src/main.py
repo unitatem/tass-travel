@@ -1,16 +1,12 @@
-from database import Database
+from graph_builder import GraphBuilder
 
 
 def main():
-    db = Database()
-    db.open_transaction()
-
-    lat = 43.732650195099
-    lng = 7.41777639896744
-    count = db.get_poi_count(lat, lng, 2500)
-    print("count:", count)
-
-    db.close_transaction()
+    graph = GraphBuilder('2005-01-01', '2008-01-01').build()
+    print("number of nodes:", graph.number_of_nodes())
+    print(graph.nodes[3])
+    print("number of edges:", graph.number_of_edges())
+    print(graph.edges[3, 4])
 
 
 if __name__ == '__main__':
