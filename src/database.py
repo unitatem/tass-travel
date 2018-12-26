@@ -54,6 +54,43 @@ class Database:
             return None
         return ret[0]
 
+    def get_all_cities(self):
+        self._check_cursor()
+
+        sql = """
+        SELECT * FROM city
+        """
+        self._cursor.execute(sql)
+        rows = self._cursor.fetchall()
+        rows = [{'id': r[0], 'name': r[1], 'population': r[2], 'poi_cnt': r[3]} for r in rows]
+        return rows
+
+    def get_all_cities_one_airport_geo(self):
+        self._check_cursor()
+
+        sql = """
+        SELECT DISTINCT f.org_city, a.latitude, a.longitude
+        FROM flight f
+            LEFT JOIN airport a on f.org_airport = a.id;
+        """
+        self._cursor.execute(sql)
+        rows = self._cursor.fetchall()
+        result = {}
+        for r in rows:
+            result[r[0]] = {'lat': r[1], 'lng': r[2]}
+        return result
+
+    def update_city_poi_cnt(self, id: int, cnt: int):
+        self._check_cursor()
+
+        sql = """
+        UPDATE city
+        SET poi_cnt = '{cnt}'
+        WHERE id = '{id}' ;
+        """.format(cnt=cnt,
+                   id=id)
+        self._cursor.execute(sql)
+
     def insert_airport(self, code: str, latitude: float, longitude: float):
         self._check_cursor()
 
@@ -74,56 +111,6 @@ class Database:
         VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
         self._cursor.execute(sql, (org_city, org_airport, dst_city, dst_airport,
                                    passengers, seats, flights, distance, date))
-
-    # PostGIS encodes coordinates as Mercator projection (ref: http://openstreetmapdata.com/info/projections).
-    # Mercator Projection is known as EPSG 3857 (units: meters).
-    #
-    # Google Maps use WGS84 known as EPSG 4326 (former 900913 (Google in numeric AWESOME)) (units: degrees).
-    #
-    # PostGIS encodes longitude as x coordinate and latitude as y coordinate.
-    #
-    # SQL query below prints: osm_id, name, latitude, longitude and distance (from hardcoded point)
-    # for points classified as cafe in distance below 2500 meters from hardcoded point.
-
-    # SELECT
-    # osm_id,
-    # name,
-    # ST_Y(ST_Transform(way, 4326)) AS lat,
-    # ST_X(ST_Transform(way, 4326)) AS lng,
-    # ST_Distance(way,
-    #             ST_TRANSFORM(ST_SETSRID(ST_MAKEPOINT(7.41777639896744, 43.732650195099), 4326), 3857)) as dist
-    # FROM planet_osm_point
-    # WHERE amenity = 'cafe' AND ST_DWITHIN(way,
-    # 				      ST_TRANSFORM(ST_SETSRID(ST_MAKEPOINT(7.41777639896744, 43.732650195099), 4326), 3857), 2500);
-
-    def get_poi_count(self, lat: float, lng: float, radius: float):
-        self._check_cursor()
-
-        sql = """
-        SELECT COUNT(*)
-        FROM planet_osm_point
-        WHERE amenity = 'cafe'
-            AND ST_DWITHIN(way,
-                           ST_TRANSFORM(ST_SETSRID(ST_MAKEPOINT({longitude}, {latitude}),
-                                                   4326),
-                                        3857),
-                           {radius})
-        """.format(latitude=lat,
-                   longitude=lng,
-                   radius=radius)
-        self._cursor.execute(sql)
-        return self._safe_fetchone()
-
-    def get_all_cities(self):
-        self._check_cursor()
-
-        sql = """
-        SELECT * FROM city
-        """
-        self._cursor.execute(sql)
-        rows = self._cursor.fetchall()
-        rows = [{'id': r[0], 'name': r[1], 'population': r[2]} for r in rows]
-        return rows
 
     def get_flights(self, begin_date: str, end_end: str):
         """

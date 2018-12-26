@@ -1,12 +1,5 @@
 #!/bin/bash
 
-if [[ "$1" != "" ]]; then
-    OSM_FILE=$1
-else
-    OSM_FILE=monaco.osm.pbf
-fi
-
-
 RED='\033[0;31m'
 NC='\033[0m'
 function ECHO {
@@ -25,11 +18,11 @@ ECHO "create tass_db (password=tass)"
 psql -U tass -h localhost -d postgres << EOF
 	CREATE DATABASE tass_db ;
 	\c tass_db
-	CREATE EXTENSION postgis ;
 
     CREATE TABLE city(id SERIAL NOT NULL PRIMARY KEY,
                       name VARCHAR(255) NOT NULL UNIQUE,
-                      population INT NOT NULL) ;
+                      population INT NOT NULL,
+                      poi_cnt INT) ;
 
     CREATE TABLE airport(id SERIAL NOT NULL PRIMARY KEY,
                          code CHAR(3) NOT NULL UNIQUE,
@@ -48,8 +41,4 @@ psql -U tass -h localhost -d postgres << EOF
                         fly_date DATE NOT NULL) ;
 EOF
 
-ECHO "insert osm data"
-osm2pgsql -s -U tass -W -H localhost -d tass_db ../resources/${OSM_FILE}
-
-echo DONE
-
+ECHO "DONE"
