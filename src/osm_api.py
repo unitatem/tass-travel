@@ -10,16 +10,10 @@ class OSM:
     def get_poi_cnt_for_city(self, name: str, lat_lng: {float, float}, radius: int):
         query = """
         [out:json][timeout:60];
-        (
-          node
-            ["name"="{name}"]
-            ["place"="city"]
-            ({s},{w},{n},{e});
-          node
-            ["name"="{name}"]
-            ["place"="town"]
-            ({s},{w},{n},{e});
-        );
+        node
+          ["name"="{name}"]
+          ["place"]
+          ({s},{w},{n},{e});
         (
           node(around:{radius})["historic"] -> .historic_n;
           way(around:{radius})["historic"] -> .historic_w;

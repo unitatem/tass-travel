@@ -10,7 +10,10 @@ class Database:
 
     def __del__(self):
         print("Database finalizer called")
+        if self._cursor is not None:
+            self._cursor.close()
         if self._connection is not None:
+            self._connection.commit()
             self._connection.close()
 
     def open_transaction(self):
@@ -69,9 +72,9 @@ class Database:
         self._check_cursor()
 
         sql = """
-        SELECT DISTINCT f.org_city, a.latitude, a.longitude
+        SELECT DISTINCT f.dst_city, a.latitude, a.longitude
         FROM flight f
-            LEFT JOIN airport a on f.org_airport = a.id;
+            LEFT JOIN airport a on f.dst_airport = a.id
         """
         self._cursor.execute(sql)
         rows = self._cursor.fetchall()
