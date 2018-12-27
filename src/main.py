@@ -1,32 +1,26 @@
-from database import Database
 from graph_builder import GraphBuilder
 
 
 def main():
     graph = GraphBuilder('2005-01-01', '2008-01-01').build()
-    print("number of nodes:", graph.number_of_nodes())
-    print(graph.nodes[3])
-    print("number of edges:", graph.number_of_edges())
-    print(graph.edges[3, 4])
-    #
-    # # TODO popular average destinations
-    # popular_cities = {}
-    # for k, v in graph.nodes.items():
-    #     if k > 30:
-    #         break
-    #     popular_cities[k] = v
-    # print(popular_cities)
-    #
-    # # find poi cnt in that regions
-    # db = Database()
-    # db.open_transaction()
-    #
-    # geo = db.find_city_geo_by_name("Monaco")
-    # print(geo)
-    #
-    # db.close_transaction()
+    print("Number of nodes:", graph.number_of_nodes())
+    print(list(graph.nodes.items())[0])
+    print("Number of edges:", graph.number_of_edges())
+    print(list(graph.edges.items())[0])
 
-    # present list sorted by
+    # TODO popular average destinations, this is mock, use some graph property
+    popular_cities = []
+    for k, v in graph.nodes.items():
+        if k > 30:
+            continue
+        v['id'] = k
+        v['normalized_poi'] = v['poi_cnt'] / v['population']
+        popular_cities.append(v)
+
+    popular_cities = sorted(popular_cities, key=lambda x: x['normalized_poi'], reverse=True)
+    print("\nPossible popular cities:")
+    for c in popular_cities:
+        print(c)
 
 
 if __name__ == '__main__':
