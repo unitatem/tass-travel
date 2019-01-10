@@ -20,7 +20,7 @@ class GraphBuilder:
     def _cities(self):
         cities = self._db.get_all_cities()
         for city in cities:
-            self._graph.add_node(city['id'], name=city['name'], population=city['population'], poi_cnt=city['poi_cnt'])
+            self._graph.add_node(city['id'], name=city['name'], population=city['population'])
 
     def _flights(self):
         flights = self._db.get_flights(self._from_date, self._to_date)

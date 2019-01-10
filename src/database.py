@@ -89,13 +89,16 @@ class Database:
         sql = """INSERT INTO poi(city, name, type, value) VALUES(%s, %s, %s, %s)"""
         self._cursor.execute(sql, (city_id, poi['name'], poi['type'], poi['value']))
 
-    def count_poi(self, city_id: int):
+    def count_poi(self, city_id: int, *args):
         self._check_cursor()
 
         sql = """
         SELECT COUNT(*)
         FROM poi
         WHERE city={id}""".format(id=city_id)
+        for a in args:
+            sql += """ AND type='{type}'""".format(type=a)
+
         self._cursor.execute(sql)
         return self._safe_fetchone()
 

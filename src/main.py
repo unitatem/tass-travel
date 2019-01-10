@@ -1,3 +1,4 @@
+from database import Database
 from graph_builder import GraphBuilder
 
 
@@ -8,14 +9,17 @@ def main():
     print("Number of edges:", graph.number_of_edges())
     print(list(graph.edges.items())[0])
 
+    db = Database()
+    db.open_transaction()
     # TODO popular average destinations, this is mock, use some graph property
     popular_cities = []
     for k, v in graph.nodes.items():
         if k > 30:
             continue
         v['id'] = k
-        v['normalized_poi'] = v['poi_cnt'] / v['population']
+        v['normalized_poi'] = db.count_poi(k, 'tourism') / v['population']
         popular_cities.append(v)
+    db.close_transaction()
 
     popular_cities = sorted(popular_cities, key=lambda x: x['normalized_poi'], reverse=True)
     print("\nPossible popular cities:")
