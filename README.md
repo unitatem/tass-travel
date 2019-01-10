@@ -19,5 +19,5 @@ cd src
 python3 download_resources.py
 ./setup_db.sh
 python3 flight_parser.py
-python3 poi_cnt_updater.py
+python3 poi_updater.py
 ```

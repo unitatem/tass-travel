@@ -65,7 +65,7 @@ class Database:
         """
         self._cursor.execute(sql)
         rows = self._cursor.fetchall()
-        rows = [{'id': r[0], 'name': r[1], 'population': r[2], 'poi_cnt': r[3]} for r in rows]
+        rows = [{'id': r[0], 'name': r[1], 'population': r[2]} for r in rows]
         return rows
 
     def get_all_cities_one_airport_geo(self):
@@ -83,16 +83,24 @@ class Database:
             result[r[0]] = {'lat': r[1], 'lng': r[2]}
         return result
 
-    def update_city_poi_cnt(self, id: int, cnt: int):
+    def insert_poi(self, city_id: int, poi):
+        self._check_cursor()
+
+        sql = """INSERT INTO poi(city, name, type, value) VALUES(%s, %s, %s, %s)"""
+        self._cursor.execute(sql, (city_id, poi['name'], poi['type'], poi['value']))
+
+    def count_poi(self, city_id: int, *args):
         self._check_cursor()
 
         sql = """
-        UPDATE city
-        SET poi_cnt = '{cnt}'
-        WHERE id = '{id}' ;
-        """.format(cnt=cnt,
-                   id=id)
+        SELECT COUNT(*)
+        FROM poi
+        WHERE city={id}""".format(id=city_id)
+        for a in args:
+            sql += """ AND type='{type}'""".format(type=a)
+
         self._cursor.execute(sql)
+        return self._safe_fetchone()
 
     def insert_airport(self, code: str, latitude: float, longitude: float):
         self._check_cursor()

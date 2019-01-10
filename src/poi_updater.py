@@ -5,7 +5,7 @@ from database import Database
 from osm_api import OSM
 
 
-class PoiCntUpdater:
+class PoiUpdater:
     def __init__(self, radius: int):
         self._radius = radius
         self._db = Database()
@@ -17,40 +17,43 @@ class PoiCntUpdater:
         cities = self._db.get_all_cities()
         city_local_geo = self._db.get_all_cities_one_airport_geo()
         for city in cities:
-            if city['poi_cnt'] is not None:
+            if self._db.count_poi(city['id']) != 0:
                 continue
             c = city['name'].split(", ")
             city_name = c[0]
-            print(city_name)
+            print(city_name + ' ', end='', flush=True)
 
-            cnt = self._osm.get_poi_cnt_for_city(city_name,
-                                                 city_local_geo[city['id']],
-                                                 self._radius)
-            if cnt == 0:
-                print("Sth gone wrong: ", city)
-            self._db.update_city_poi_cnt(city['id'], cnt)
-            # just in case try to prevent ban
+            pois = self._osm.get_pois(city_name,
+                                      city_local_geo[city['id']],
+                                      self._radius)
+            print(len(pois))
+            if len(pois) == 0:
+                print("Sth gone wrong:", city)
+            for poi in pois:
+                self._db.insert_poi(city['id'], poi)
+            # just in case, try to prevent ban
             time.sleep(random.uniform(0.1, 1))
 
         self._db.close_transaction()
 
     def invalid_cities(self):
         self._db.open_transaction()
-        cities = self._db.get_all_cities()
-        self._db.close_transaction()
 
+        cities = self._db.get_all_cities()
         invalid_city = []
         for city in cities:
-            if city['poi_cnt'] is None or city['poi_cnt'] == 0:
+            if self._db.count_poi(city['id']) == 0:
                 invalid_city.append(city)
+
+        self._db.close_transaction()
         return invalid_city
 
 
 def main():
-    pcu = PoiCntUpdater(20000)
-    pcu.update()
+    pu = PoiUpdater(20000)
+    pu.update()
     print("Done")
-    invalid_cities = pcu.invalid_cities()
+    invalid_cities = pu.invalid_cities()
     for c in invalid_cities:
         print(c)
 
