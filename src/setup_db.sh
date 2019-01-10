@@ -21,8 +21,7 @@ psql -U tass -h localhost -d postgres << EOF
 
     CREATE TABLE city(id SERIAL NOT NULL PRIMARY KEY,
                       name VARCHAR(255) NOT NULL UNIQUE,
-                      population INT NOT NULL,
-                      poi_cnt INT) ;
+                      population INT NOT NULL) ;
 
     CREATE TABLE airport(id SERIAL NOT NULL PRIMARY KEY,
                          code CHAR(3) NOT NULL UNIQUE,
@@ -39,6 +38,12 @@ psql -U tass -h localhost -d postgres << EOF
                         flights INT NOT NULL,
                         distance INT NOT NULL,
                         fly_date DATE NOT NULL) ;
+
+     CREATE TABLE poi(id SERIAL NOT NULL PRIMARY KEY,
+                      city INTEGER NOT NULL REFERENCES city (id),
+                      name VARCHAR(255) NOT NULL,
+                      type VARCHAR(255) NOT NULL,
+                      value VARCHAR(255) NOT NULL) ;
 EOF
 
 ECHO "DONE"
