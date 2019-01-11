@@ -26,7 +26,7 @@ http://www.overpass-api.de/ - API for OSM access
 # Usage
 Prepare database
 ```bash
-cd src
+cd tass_travel
 python3 setup/download_resources.py
 setup/setup_db.sh
 python3 setup/flight_parser.py

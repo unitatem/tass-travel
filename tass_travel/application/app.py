@@ -3,8 +3,8 @@ import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMainWindow
 
-from tools.analyzer import Analyzer
 from application.gui import Ui_MainWindow
+from tools.analyzer import Analyzer
 from tools.graph_builder import GraphBuilder
 
 
