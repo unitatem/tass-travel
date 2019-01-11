@@ -1,8 +1,8 @@
 import random
 import time
 
-from database import Database
-from osm_api import OSM
+from tools.database import Database
+from tools.osm_api import OSM
 
 
 class PoiUpdater:

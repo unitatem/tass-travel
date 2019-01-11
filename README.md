@@ -27,8 +27,8 @@ http://www.overpass-api.de/ - API for OSM access
 Prepare database
 ```bash
 cd src
-python3 download_resources.py
-./setup_db.sh
-python3 flight_parser.py
-python3 poi_updater.py
+python3 setup/download_resources.py
+setup/setup_db.sh
+python3 setup/flight_parser.py
+python3 setup/poi_updater.py
 ```

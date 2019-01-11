@@ -1,6 +1,6 @@
 import csv
 
-from database import Database
+from tools.database import Database
 
 
 class FlightParser:

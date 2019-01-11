@@ -1,5 +1,5 @@
-from analyzer import Analyzer
-from graph_builder import GraphBuilder
+from tools.analyzer import Analyzer
+from tools.graph_builder import GraphBuilder
 
 
 def main():

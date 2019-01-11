@@ -3,9 +3,9 @@ import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMainWindow
 
-from analyzer import Analyzer
+from tools.analyzer import Analyzer
 from application.gui import Ui_MainWindow
-from graph_builder import GraphBuilder
+from tools.graph_builder import GraphBuilder
 
 
 class App(QMainWindow, Ui_MainWindow):

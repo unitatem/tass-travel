@@ -1,6 +1,6 @@
 import networkx as nx
 
-from database import Database
+from tools.database import Database
 
 
 class GraphBuilder:
