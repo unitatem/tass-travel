@@ -2,10 +2,21 @@
 Finds best travel destinations based on user preferences
 
 # Dependencies
+### PostgreSQL
 https://www.postgresql.org/  
-
 ```bash
 sudo apt-get install postgresql postgresql-contrib
+```
+
+### PyQt5
+https://pypi.org/project/PyQt5/
+```bash
+sudo apt install qtcreator
+```
+
+For conversion of *.ui into *.py
+```bash
+pyuic5 -x file.ui -o file.py
 ```
 
 # Resources
