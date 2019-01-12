@@ -13,7 +13,7 @@ class Analyzer:
         sorted_weights = [(n, v) for n, v in sorted_weights if v > 0]
 
         zipped = list(map(
-            lambda item: (item[0][0], (item[0][1])/(item[1][1])),
+            lambda item: (item[0][0], (item[0][1])/(item[1][1])) if item[0][0] == item[1][0] else None,
             zip(sorted_weights, sorted_degrees)
         ))
 
