@@ -27,13 +27,13 @@ class Analyzer:
         return popular_cities
 
     @staticmethod
-    def get_best_poi_cities(cities, types, values):
+    def get_best_poi_cities(cities, type_name, value_name):
         db = Database()
         db.open_transaction()
 
         best_poi = []
         for c in cities:
-            c['normalized_poi'] = db.count_poi(c['id'], type=types) / c['population']
+            c['normalized_poi'] = db.count_poi(c['id'], type_name=type_name, value_name=value_name) / c['population']
             best_poi.append(c)
 
         db.close_transaction()

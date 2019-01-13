@@ -89,6 +89,19 @@ class Database:
         sql = """INSERT INTO poi(city, name, type, value) VALUES(%s, %s, %s, %s)"""
         self._cursor.execute(sql, (city_id, poi['name'], poi['type'], poi['value']))
 
+    def get_poi_values(self, type_):
+        self._check_cursor()
+
+        sql = """SELECT DISTINCT value FROM poi WHERE type='{type}'""".format(type=type_)
+        self._cursor.execute(sql)
+        rows = self._cursor.fetchall()
+        result = []
+        for r in rows:
+            if r[0] == 'yes' or r[0] == 'abandoned':
+                continue
+            result.append(r[0])
+        return sorted(result)
+
     def count_poi(self, city_id: int, **kwargs):
         self._check_cursor()
 
@@ -97,13 +110,14 @@ class Database:
         FROM poi
         WHERE city={id}""".format(id=city_id)
 
-        if 'type' in kwargs:
-            types = kwargs['type']
-            if len(types) != 0:
-                sql += """ AND ( """
-                for t in types:
-                    sql += """type='{type}' OR """.format(type=t)
-                sql += """1=0 )"""
+        if 'type_name' in kwargs:
+            tn = kwargs['type_name']
+            if tn is not None:
+                sql += """ AND type='{type}'""".format(type=tn)
+        if 'value_name' in kwargs:
+            vn = kwargs['value_name']
+            if vn is not None:
+                sql += """ AND value='{value}'""".format(value=vn)
 
         self._cursor.execute(sql)
         return self._safe_fetchone()
