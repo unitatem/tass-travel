@@ -5,7 +5,7 @@ class Analyzer:
     @staticmethod
     def get_popular_cities(graph):
         sorted_weights = sorted(graph.degree(weight='weight'), reverse=True)
-        sorted_degrees = sorted(graph.degree,  reverse=True)
+        sorted_degrees = sorted(graph.degree, reverse=True)
 
         # filter nodes which have degree > 0
         sorted_degrees = [(n, v) for n, v in sorted_degrees if v > 0]
@@ -13,7 +13,7 @@ class Analyzer:
         sorted_weights = [(n, v) for n, v in sorted_weights if v > 0]
 
         zipped = list(map(
-            lambda item: (item[0][0], (item[0][1])/(item[1][1])) if item[0][0] == item[1][0] else None,
+            lambda item: (item[0][0], (item[0][1]) / (item[1][1])) if item[0][0] == item[1][0] else None,
             zip(sorted_weights, sorted_degrees)
         ))
 
@@ -23,6 +23,7 @@ class Analyzer:
         for k, d in sorted_normalized:
             node = graph.nodes[k]
             node['id'] = k
+            node['poi'] = d
             popular_cities.append(node)
         return popular_cities
 
@@ -33,7 +34,9 @@ class Analyzer:
 
         best_poi = []
         for c in cities:
-            c['normalized_poi'] = db.count_poi(c['id'], type_name=type_name, value_name=value_name) / c['population']
+            c['normalized_poi'] = c['poi'] \
+                                  * db.count_poi(c['id'], type_name=type_name, value_name=value_name) \
+                                  / c['population']
             best_poi.append(c)
 
         db.close_transaction()
